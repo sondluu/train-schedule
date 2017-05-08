@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Train Schedule</title>
+  <!-- Bootswatch Styling for Improving the Aesthetics -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.6/flatly/bootstrap.min.css">
+  <!-- Font Awesome CSS Icons (For cool glyphicons) -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+  <!-- Firebase reference link-->
+  <script src="https://www.gstatic.com/firebasejs/3.7.8/firebase.js"></script>
+  <!-- Style to fix the issue of text extending past panel length -->
+  <style>
+    .panel-body a {
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <!-- Main Bootstrap Search -->
+  <div class="container">
+    <!-- Jumbotron for Title -->
+    <div class="jumbotron" style="background-color: #20315A ; color: white;">
+      <h1 class="text-center"><strong> Anytime is Train Time</strong></h1>
+      <p class="text-center"> Choo Choo. Chee Chee</p>
+    </div>
+    <!-- This row will handle all of the retrieved articles -->
+    <div class="row">
+      <div class="col-sm-12">
+        <br>
+        <!-- This panel will initially be made up of a panel and wells for each of the articles retrieved -->
+        <div class="panel panel-primary">
+          <!-- Panel Heading for the retrieved articles box -->
+          <div class="panel-heading">
+            <h3 class="panel-title"><strong> Current Train Schedule</strong></h3>
+          </div>
+
+
+
+
+
+          <!-- This main panel will hold each of the resulting articles -->
+          <div class="panel-body" id="well-section">
+
+
+          <table class="table">
+  <thead class="thead-inverse">
+    <tr>
+      <th>Train Name</th>
+      <th>Destination</th>
+      <th>Frequency</th>
+      <th>Next Arrival</th>
+      <th>Minutes Away</th>
+    </tr>
+  </thead>
+  <tbody id="input-table">
+    <tr>
+      
+      <td id="name-display"></td>
+      <td id="destination-display"></td>
+      <td id="frequency-display"></td>
+      <td id="next-arrrival"></td>
+      <td id="minutes-away"></td>
+
+    </tr>
+  </tbody>
+</table>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Row for Searching New York Times -->
+    <div class="row">
+      <div class="col-sm-12">
+        <br>
+        <!-- First panel is for handling the search parameters -->
+        <div class="panel panel-primary">
+          <div class="panel-heading">
+            <h3 class="panel-title"><strong>   Add Train</strong></h3>
+          </div>
+          <div class="panel-body">
+            <!-- Here we create an HTML Form for handling the inputs-->
+            <form role="form">
+              <!-- Here we create the text box for capturing the search term-->
+              <div class="form-group">
+                <label for="train-name">Train Name:</label>
+                <input type="text" class="form-control" id="name-input">
+              </div>
+              <!-- Here we capture the number of records that the user wants to retrieve  -->
+              <div class="form-group">
+                <label for="destination">Desination</label>
+                <input type="text" class="form-control" id="destination-input">
+                        </input>
+              </div>
+              <!-- Here we capture the Start Year Parameter-->
+              <div class="form-group">
+                <label for="first-train">First Train</label>
+                <input type="text" class="form-control" id="firstTrain-input">
+              </div>
+              <!-- Here we capture the End Year Parameter -->
+              <div class="form-group">
+                <label for="frequency">Frequency</label>
+                <input type="text" class="form-control" id="frequency-input">
+              </div>
+              <!-- Here we have our final submit button -->
+              <button type="submit" class="btn btn-default" id="add-employee"><i class="fa fa-search"></i> Submit</button>
+              <button type="button" class="btn btn-default" id="clear-all"><i class="fa fa-trash"></i> Clear Results</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Footer Region -->
+    <div class="row">
+      <div class="col-sm-12">
+        <!-- Line Break followed by closing -->
+        <hr>
+        <h5 class="text-center"><small>Made by Ahmed with lots and lots of <i class="fa fa-heart"></i></small></h5>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <!-- jQuery JS -->
+  <script src="https://code.jquery.com/jquery.js"></script>
+  <!-- Code to the JavaScript File -->
+ 
+
+
+<script src="https://www.gstatic.com/firebasejs/3.7.8/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCN4WlcyMsNM-i83kUr9INlx8jipN0M0GA",
+    authDomain: "fir-intro-60980.firebaseapp.com",
+    databaseURL: "https://fir-intro-60980.firebaseio.com",
+    projectId: "fir-intro-60980",
+    storageBucket: "fir-intro-60980.appspot.com",
+    messagingSenderId: "98726084040"
+  };
+  firebase.initializeApp(config);
+
+
+  // Create a variable to reference the database
+
+var database = firebase.database();
+
+// Capture Button Click
+    $("#add-train").on("click", function() {
+      // Don't refresh the page!
+      event.preventDefault();
+
+// Code in the logic for storing and retrieving the most recent user.
+
+      var name = "";
+      var destination = "";
+      var firstTrain = "";
+      var tFrequency = "";
+
+      // get input:
+
+      name = $("#name-input").val().trim();
+      destination = $("#destination-input").val().trim();
+      firstTrain = $("#firstTrain-input").val().trim();
+      tFrequency = $("#frequency-input").val().trim();
+
+
+// change what's been saved in firebase:
+
+        database.ref().push({
+        name: name,
+        destination: destination,
+        firstTrain: firstTrain,
+        tFrequency: tFrequency,
+        dateAdded: firebase.database.ServerValue.TIMESTAMP
+      });
+    });
+
+
+       // Firebase watcher + initial loader HINT: This code behaves similarly to .on("value")
+    database.ref().on("child_added", function(childSnapshot) {
+
+      // Log everything that's coming out of snapshot
+      console.log(childSnapshot.val().name);
+      console.log(childSnapshot.val().destination);
+      console.log(childSnapshot.val().firstTrain);
+      console.log(childSnapshot.val().tFrequency);
+
+
+// full list of items to the well
+      $("#input-table").append("<tr><td>" + childSnapshot.val().name +
+        "</td><td>" + childSnapshot.val().destination + "</td><td>" + childSnapshot.val().firstTrain +
+        " </td><td>" + childSnapshot.val().tFrequency + " </td></tr>");
+
+
+// Handle the errors
+    }, function(errorObject) {
+      console.log("Errors handled: " + errorObject.code);
+    });
+
+    database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function(snapshot) {
+
+      // Change the HTML to reflect
+      $("#name-display").html(snapshot.val().name);
+      $("#destination-display").html(snapshot.val().destination);
+      $("#firstTrain-display").html(snapshot.val().firstTrain);
+      $("#frequency-display").html(snapshot.val().tFrequency);
+      $("")
+    });
+
+    
+
+// calculate the time difference:
+
+    var newDate = moment(new Date("02/14/2001"));
+    console.log(moment(convertedDate).diff(moment(newDate), "days"));
+
+//Below is train schedule calculation
+
+
+    // First Time (pushed back 1 year to make sure it comes before current time)
+    var firstTrainConverted = moment(firstTrain, "hh:mm").subtract(1, "years");
+    console.log(firstTrainConverted);
+
+    // Current Time
+    var currentTime = moment();
+    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
+
+    // Difference between the times
+    var diffTime = moment().diff(moment(firstTrainConverted), "minutes");
+    console.log("DIFFERENCE IN TIME: " + diffTime);
+
+    // Time apart (remainder)
+    var tRemainder = diffTime % tFrequency;
+    console.log(tRemainder);
+
+    // Minute Until Train
+    var tMinutesTillTrain = tFrequency - tRemainder;
+    console.log("MINUTES TILL TRAIN: " + tMinutesTillTrain);
+
+    // Next Train
+    var nextTrain = moment().add(tMinutesTillTrain, "minutes");
+    console.log("ARRIVAL TIME: " + moment(nextTrain).format("hh:mm"));
+
+
+</script>
+</body>
+</html>
